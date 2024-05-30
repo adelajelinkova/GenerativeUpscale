@@ -1,0 +1,74 @@
+name: 01_NewIRN_DB_x4_scratch_DIV2K
+use_tb_logger: True
+model: NewIRN
+distortion: sr
+scale: 4
+gpu_ids: [0]
+datasets:
+  train:
+    name: DIV2K
+    mode: LQGT
+    dataroot_GT: ../dataset/General100_square/train/
+    dataroot_LQ: ~ # path to training reference LR images, not necessary, if not provided, LR images will be generated in dataloader
+    use_shuffle: True
+    n_workers: 6
+    batch_size: 2
+    GT_size: 144
+    use_flip: True
+    use_rot: True
+    color: RGB
+    phase: train
+    scale: 4
+    data_type: img
+  val:
+    name: val_DIV2K
+    mode: LQGT
+    dataroot_GT: ../dataset/General100_square/val/
+    dataroot_LQ: ~  # No direct LR images provided
+    phase: val
+    scale: 4
+    data_type: img
+network_G:
+  which_model_G:
+    subnet_type: DBNet
+    use_ConvDownsampling: False
+    down_first: False
+  in_nc: 3
+  out_nc: 3
+  block_num: [8, 8]
+  scale: 4
+  init: xavier
+  gc: 32
+path:
+  pretrain_model_G: None
+  strict_load: True
+  resume_state: None
+  root: ..
+  experiments_root: ../experiments/01_NewIRN_DB_x4_scratch_DIV2K
+  models: ../experiments/01_NewIRN_DB_x4_scratch_DIV2K/models
+  training_state: ../experiments/01_NewIRN_DB_x4_scratch_DIV2K/training_state
+  log: ../experiments/01_NewIRN_DB_x4_scratch_DIV2K
+  val_images: ../experiments/01_NewIRN_DB_x4_scratch_DIV2K/val_images
+train:
+  lr_G: 0.0002
+  beta1: 0.9
+  beta2: 0.999
+  niter: 5000
+  warmup_iter: -1
+  lr_scheme: MultiStepLR
+  lr_steps: [1000, 2000, 3000, 4000]
+  lr_gamma: 0.5
+  pixel_criterion_forw: l2
+  pixel_criterion_back: l1
+  manual_seed: 10
+  val_freq: 50
+  lambda_fit_forw: 16.0
+  lambda_rec_back: 1
+  lambda_ce_forw: 1
+  weight_decay_G: 1e-05
+  gradient_clipping: 10
+logger:
+  print_freq: 50
+  save_checkpoint_freq: 1000
+is_train: True
+dist: False

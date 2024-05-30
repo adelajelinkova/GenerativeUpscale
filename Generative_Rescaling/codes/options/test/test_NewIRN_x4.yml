@@ -1,0 +1,30 @@
+name: NewIRN_x4
+suffix: ~  # add suffix to saved images
+model: NewIRN
+distortion: sr
+scale: 4
+crop_border: ~  # crop border when evaluation. If None(~), crop the scale pixels
+gpu_ids: [0]
+
+datasets:
+  test_1:
+    name: set5
+    mode: LQGT
+    dataroot_GT: ../dataset/General100/val
+    dataroot_LQ: ~
+
+#### network
+network_G:
+  which_model_G:
+    subnet_type: DBNet
+  in_nc: 3
+  out_nc: 3
+  block_num: [8, 8]
+  scale: 4
+  init: xavier
+
+#### path
+path:
+  experiments_root: ../experiments  # specify the experiments root folder here
+  pretrain_model_G_down: ../experiments/01_NewIRN_DB_x4_scratch_DIV2K/models/latest_G_down.pth  # specify the path to your downscaling pretrained model
+  pretrain_model_G_up: ../experiments/01_NewIRN_DB_x4_scratch_DIV2K/models/latest_G_up.pth  # specify the path to your upscaling pretrained model
